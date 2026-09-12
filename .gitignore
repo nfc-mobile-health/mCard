@@ -1,10 +1,60 @@
-*.iml
-.gradle
-/local.properties
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# ===== Gradle / build outputs =====
+.gradle/
+build/
+**/build/
+out/
+
+# ===== Local machine config — SDK path, and sometimes API keys =====
 local.properties
+
+# ===== Android Studio / IntelliJ =====
 .idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+
+# ===== Kotlin =====
+.kotlin/
+
+# ===== Built artifacts — never commit binaries =====
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# ===== Signing — never commit keystores or passwords =====
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# ===== Project-specific security =====
+# This project's entire security model depends on private key material
+# never touching source control — see architecture-decisions-log.md's
+# credential-handling decisions. Defensive patterns in case a key or
+# secret ends up in a test-resources or scratch file during manual
+# testing (this is exactly the mistake the old app made with hardcoded
+# RSA keys in CryptoUtils.kt — don't reintroduce it via git history):
+*.pem
+*.key
+*.p12
+secrets.properties
+.env
+.env.local
+
+# ===== Lint =====
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# ===== OS junk =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== Editor junk =====
+*.swp
+*~
