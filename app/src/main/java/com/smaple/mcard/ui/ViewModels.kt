@@ -121,7 +121,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val res = backendApi.getPatient(patientId)
             res.profile?.let { sessionCoordinator.prepareProfile(it) }
-            sessionCoordinator.startReaderSession()
+            // Waiting for physical CAD tap via HceService
         }
     }
 }
