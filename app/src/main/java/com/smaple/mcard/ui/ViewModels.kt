@@ -59,10 +59,8 @@ class AuthViewModel @Inject constructor(
     fun register(pin: String) {
         viewModelScope.launch {
             val res = backendApi.registerPatient(registerId.value, registerName.value, null, null, null, null)
-            if (res.success && res.credential != null) {
-                credentialStore.storeCredential(res.credential!!)
-                // Test PIN is hardcoded in FakeCredentialStore as 123456 by default, but we simulate it working.
-                login(registerId.value, pin.takeIf { it.isNotBlank() } ?: "123456")
+            if (res.success) {
+                login(registerId.value, pin)
             } else {
                 _loginError.value = res.message
             }
