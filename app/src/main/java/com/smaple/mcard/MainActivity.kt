@@ -1,5 +1,5 @@
 /**
- * MainActivity hosting the Jetpack Compose navigation graph for mCard Demo.
+ * Entry point for the application, setting up the Compose content and Android lifecycle.
  */
 package com.smaple.mcard
 

@@ -1,3 +1,6 @@
+/**
+ * State holders bridging the UI layer with Track A fakes and protocol logic. Enforces regression invariants like distinct peer taps and full-record replacement.
+ */
 package com.smaple.mcard.ui
 
 import androidx.lifecycle.ViewModel

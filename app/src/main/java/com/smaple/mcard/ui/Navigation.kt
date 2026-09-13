@@ -1,3 +1,6 @@
+/**
+ * Defines the Compose navigation graph, routing between screens based on authentication and session states.
+ */
 package com.smaple.mcard.ui
 
 import androidx.compose.runtime.*

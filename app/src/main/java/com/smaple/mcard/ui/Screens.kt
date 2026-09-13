@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen definitions mapping state to visual components.
+ */
 package com.smaple.mcard.ui
 
 import androidx.compose.foundation.layout.*

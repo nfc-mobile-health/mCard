@@ -1,5 +1,5 @@
 /**
- * Dagger/Hilt module wiring the shared-core Fakes for mCard Track A UI.
+ * Hilt Dependency Injection module binding the shared-core Fake implementations to the app's interfaces.
  */
 package com.smaple.mcard.di
 
