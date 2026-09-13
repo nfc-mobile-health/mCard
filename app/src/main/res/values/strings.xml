@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">mCard Demo</string>
+    <string name="login_title">Patient Login</string>
+    <string name="login_id_hint">Patient ID</string>
+    <string name="login_pin_hint">6-Digit PIN</string>
+    <string name="login_button">Login</string>
+    <string name="register_toggle">Need to register? Tap here.</string>
+    <string name="register_title">Patient Registration</string>
+    <string name="register_name_hint">Full Name</string>
+    <string name="register_button">Register</string>
+    <string name="home_logout">Logout</string>
+    <string name="status_title">mCard Status</string>
+    <string name="status_idle">Ready to tap with CAD</string>
+    <string name="status_history_button">View History</string>
+    <string name="history_title">My Medical Records</string>
+    <string name="session_verifying">Verifying identity...</string>
+    <string name="session_transferring">Transferring securely...</string>
+    <string name="session_done">Done</string>
+    <string name="session_error">Secure connection failed</string>
+</resources>
