@@ -1,3 +1,7 @@
+/**
+ * Android HCE (Host Card Emulation) service that routes inbound APDUs
+ * to the shared-core ProtocolEngine.
+ */
 package com.smaple.mcard
 
 import android.nfc.cardemulation.HostApduService

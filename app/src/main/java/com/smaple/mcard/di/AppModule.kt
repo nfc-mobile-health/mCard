@@ -1,3 +1,7 @@
+/**
+ * Dagger Hilt dependency injection module for mCard.
+ * Binds real implementations of shared-core interfaces.
+ */
 package com.smaple.mcard.di
 
 import android.content.Context
