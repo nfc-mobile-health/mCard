@@ -164,26 +164,24 @@ class AuthActivity : AppCompatActivity() {
             return
         }
 
-        // Provision the PIN-derived key and verify it opens the encrypted DB.
-        AggregatorSession.provision(this, pin, patientId)
+        val dbFile = getDatabasePath("aggregator_secure.db")
+        val hasLocalDb = dbFile.exists()
         var hasLocalCred = false
-        val openError: String? = try {
-            patientManager.getCurrentPatient()               // opens the encrypted DB (fails here on wrong PIN)
-            hasLocalCred = CredentialStore.loadIntoSession(this)  // load credential into memory
-            null
-        } catch (e: Exception) {
-            AggregatorSession.lock()
-            e.message.orEmpty()
-        }
-        if (openError != null) {
-            val reason = if (openError.contains("not a database", true) ||
-                openError.contains("encrypted", true) || openError.contains("file is not", true)) {
-                "incorrect PIN (could not decrypt your data)"
-            } else {
-                "could not open your encrypted data: $openError"
+        var openError: String? = null
+
+        // Provision the in-memory PIN-derived key
+        AggregatorSession.provision(this, pin, patientId)
+
+        if (hasLocalDb) {
+            // Verify if PIN opens existing encrypted DB
+            openError = try {
+                patientManager.getCurrentPatient()               // opens the encrypted DB (fails here on wrong PIN)
+                hasLocalCred = CredentialStore.loadIntoSession(this)  // load credential into memory
+                null
+            } catch (e: Exception) {
+                AggregatorSession.lock()
+                e.message.orEmpty()
             }
-            Toast.makeText(this, "Login failed: $reason", Toast.LENGTH_LONG).show()
-            return
         }
 
         setLoading(true)
@@ -202,12 +200,21 @@ class AuthActivity : AppCompatActivity() {
                         weight = cloudPatient.weight.orEmpty(),
                         oxygenLevel = cloudPatient.oxygenLevel.orEmpty()
                     )
+
+                    // If local DB existed but had an openError (e.g. was encrypted under a wrong PIN from earlier),
+                    // heal it by recreating the store cleanly now that backend has verified the PIN.
+                    if (openError != null) {
+                        AggregatorDatabase.reset()
+                        deleteDatabase("aggregator_secure.db")
+                        AggregatorSession.provision(this@AuthActivity, pin, cloudPatient.patientId)
+                    }
+
                     patientManager.savePatient(localPatient)
 
                     // If this device has no credential yet (e.g. app data was cleared),
                     // restore it from the server so NFC mutual auth works. The server
                     // returns the stored keypair + cert on login.
-                    if (!hasLocalCred) {
+                    if (!hasLocalCred || openError != null) {
                         val creds = loginData.credentials
                         if (creds?.privateKey != null) {
                             CredentialStore.saveFromServer(this@AuthActivity, cloudPatient.patientId, creds)
@@ -233,6 +240,11 @@ class AuthActivity : AppCompatActivity() {
                             error.message?.contains("401") == true
                     if (isInvalidPin) {
                         AggregatorSession.lock()
+                        // Ensure no empty unauthenticated database file was left behind
+                        if (!hasLocalDb && getDatabasePath("aggregator_secure.db").exists()) {
+                            AggregatorDatabase.reset()
+                            deleteDatabase("aggregator_secure.db")
+                        }
                         Toast.makeText(
                             this@AuthActivity,
                             error.message ?: "Invalid PIN. Login failed.",
@@ -241,7 +253,22 @@ class AuthActivity : AppCompatActivity() {
                         return@fold
                     }
 
-                    val cachedPatient = patientManager.getCurrentPatient()
+                    if (openError != null) {
+                        // Backend unreachable and local DB could not be decrypted
+                        val reason = if (openError.contains("not a database", true) ||
+                            openError.contains("encrypted", true) || openError.contains("file is not", true)) {
+                            "incorrect PIN (could not decrypt your data)"
+                        } else {
+                            "could not open your encrypted data: $openError"
+                        }
+                        Toast.makeText(this@AuthActivity, "Login failed: $reason", Toast.LENGTH_LONG).show()
+                        return@fold
+                    }
+
+                    val cachedPatient = if (hasLocalDb) {
+                        runCatching { patientManager.getCurrentPatient() }.getOrNull()
+                    } else null
+
                     if (cachedPatient?.id == patientId) {
                         Toast.makeText(
                             this@AuthActivity,
