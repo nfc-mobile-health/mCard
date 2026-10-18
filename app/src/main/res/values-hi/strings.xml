@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">mCard</string>
+    <string name="hce_service_description">mCard फोन कार्ड</string>
+    <string name="hce_aid_group_description">mCard S-MAPLE</string>
+</resources>
