@@ -4,6 +4,16 @@
 **Reason:** The Android mCard must be selected exactly like the Java Card applet.
 **Status:** implemented.
 
+## 2026-10-21
+
+**Decision:** Phase 2 persists Basic Info and opaque record blobs in Room.
+**Reason:** HCE record operations need transactional insert, duplicate detection, paging, and oldest-first ring eviction across process restarts.
+**Status:** implemented. Existing Phase 1 Basic Info migrates lazily from the previous private preferences store.
+
+**Decision:** Phase 2 remains unauthenticated.
+**Reason:** The protocol reserves mutual authentication and session enforcement for Phase 3.
+**Status:** implemented.
+
 **Decision:** The Android mCard reports a maximum record count of 20 and a ring size of 4,096 bytes.
 **Reason:** The app specification sets these Android-specific limits.
 **Status:** implemented for `GET_INFO`.
