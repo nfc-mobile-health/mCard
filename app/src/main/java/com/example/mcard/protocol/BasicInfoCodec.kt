@@ -66,7 +66,7 @@ object BasicInfoCodec {
     }
 
     fun decode(block: ByteArray): BasicInfo {
-        validate(block)
+        require(validate(block)) { "Invalid basic info block" }
         val flags = block[1].toInt() and 0xFF
         val days = ((block[2].toInt() and 0xFF) shl 8) or (block[3].toInt() and 0xFF)
         var offset = 4

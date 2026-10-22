@@ -47,7 +47,9 @@ class MCardApduProcessor(private val store: CardStore) {
     private suspend fun addRecord(command: ByteArray): ByteArray {
         if (command.size < 6) return status(SW_WRONG_LENGTH)
         val length = command[4].toInt() and 0xFF
-        if (length !in 1..MAX_RECORD_LENGTH || command.size != length + 6) return status(SW_WRONG_LENGTH)
+        if (length !in 1..MAX_RECORD_LENGTH || command.size != length + 6 || command.last() != 0x00.toByte()) {
+            return status(SW_WRONG_LENGTH)
+        }
         if (!hasZeroP1P2(command)) return status(SW_WRONG_P1P2)
         val blob = command.copyOfRange(5, 5 + length)
         if ((blob[0].toInt() ushr 5) != RECORD_FORMAT_VERSION.toInt()) return status(SW_INCORRECT_DATA)
@@ -69,7 +71,8 @@ class MCardApduProcessor(private val store: CardStore) {
         return data.plusStatus(SW_SUCCESS)
     }
 
-    private fun isCase2(command: ByteArray): Boolean = command.size == 5
+    private fun isCase2(command: ByteArray): Boolean =
+        command.size == 5 && command[4] == 0x00.toByte()
 
     private fun hasZeroP1P2(command: ByteArray): Boolean =
         (command[2].toInt() and 0xFF) == 0 && (command[3].toInt() and 0xFF) == 0
