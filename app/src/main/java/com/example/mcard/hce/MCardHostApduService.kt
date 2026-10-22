@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class MCardHostApduService : HostApduService() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val processor by lazy { MCardApduProcessor(MCardStore(this)) }
+    private val processor by lazy { MCardApduProcessor(MCardStore(this), requireSecureSession = true) }
 
     override fun processCommandApdu(commandApdu: ByteArray, extras: Bundle?): ByteArray? {
         scope.launch {
@@ -21,7 +21,9 @@ class MCardHostApduService : HostApduService() {
         return null
     }
 
-    override fun onDeactivated(reason: Int) = Unit
+    override fun onDeactivated(reason: Int) {
+        processor.resetSession()
+    }
 
     override fun onDestroy() {
         scope.cancel()
